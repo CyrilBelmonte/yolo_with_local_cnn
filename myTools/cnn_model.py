@@ -6,7 +6,9 @@ import threading
 
 from myTools import image_tools as img_t
 
-info = []
+info_cat = []
+info_dog = []
+info_box = []
 
 
 def get_inception_v2_cat():
@@ -40,11 +42,15 @@ def get_more_dog(model, img):
 def thread_for_cnn(i, class_t, model, img):
     label = ""
     prob = 0
-    if class_t == "dog":
+    if class_t.lower() == "dog":
         label, prob = get_more_dog(model, img)
-    else:
+        print("Dog {} {}".format(label, prob))
+        info_dog.append([i, label, prob])
+    elif class_t.lower() == "cat":
         label, prob = get_more_cat(model, img)
-    info.append([i, label, prob])
+        print("Cat {} {}".format(label, prob))
+        info_cat.append([i, label, prob])
+    info_box.insert(i, [label, prob])
 
 
 def get_more_data(img, model_cat, model_dog, outputs, class_names):
@@ -65,13 +71,13 @@ def get_more_data(img, model_cat, model_dog, outputs, class_names):
             if class_names[int(classes[i])] == "cat":
                 process = ThreadCat(i, "cat", model_cat, img_to_cnn)
                 process_s.append(process)
-            else:
+            elif class_names[int(classes[i])] == "dog":
                 process = ThreadDog(i, "dog", model_dog, img_to_cnn)
                 process_s.append(process)
     for process in process_s:
         process.start()
         process.join()
-    return info
+    return info_cat, info_dog, info_box
 
 
 class ThreadCat(threading.Thread):

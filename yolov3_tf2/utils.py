@@ -99,7 +99,7 @@ def broadcast_iou(box_1, box_2):
     return int_area / (box_1_area + box_2_area - int_area)
 
 
-def draw_outputs(img, outputs, class_names, cnn_output):
+def draw_outputs(img, outputs, class_names, info_cat, info_dog, info_box):
     boxes, objectness, classes, nums = outputs
     boxes, objectness, classes, nums = boxes[0], objectness[0], classes[0], nums[0]
     wh = np.flip(img.shape[0:2])
@@ -107,10 +107,15 @@ def draw_outputs(img, outputs, class_names, cnn_output):
         x1y1 = tuple((np.array(boxes[i][0:2]) * wh).astype(np.int32))
         x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
 
-        if class_names[int(classes[i])] == "cat" or class_names[int(classes[i])] == "dog":
+        if class_names[int(classes[i])] == "cat":
             img = cv2.rectangle(img, x1y1, x2y2, (0, 0, 0), 2)
             img = cv2.putText(img, '{} {:.2f} {} {:.2f}'.format(
-                class_names[int(classes[i])], objectness[i], cnn_output[i][1], cnn_output[i][2]),
+                class_names[int(classes[i])], objectness[i], info_box[i][0], info_box[i][1]),
+                              x1y1, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), 2)
+        elif class_names[int(classes[i])] == "dog":
+            img = cv2.rectangle(img, x1y1, x2y2, (0, 0, 0), 2)
+            img = cv2.putText(img, '{} {:.2f} {} {:.2f}'.format(
+                class_names[int(classes[i])], objectness[i], info_box[i][0], info_box[i][1]),
                               x1y1, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), 2)
         else:
             img = cv2.rectangle(img, x1y1, x2y2, (0, 0, 0), 2)

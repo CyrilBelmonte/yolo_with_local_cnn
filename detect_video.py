@@ -82,7 +82,8 @@ def main(_argv):
         t2 = time.time()
 
         t3 = time.time()
-        cnn_output = cnn.get_more_data(img, model_cat, model_dog, (boxes, scores, classes, nums), class_names)
+        info_cat, info_dog, inf_box = cnn.get_more_data(img, model_cat, model_dog, (boxes, scores, classes, nums),
+                                                        class_names)
         t4 = time.time()
 
         times.append(t2 - t1)
@@ -92,7 +93,7 @@ def main(_argv):
         times = times[-20:]
 
         img = draw_outputs(img, (boxes, scores, classes, nums), class_names,
-                           cnn_output)
+                           info_cat, info_dog, inf_box)
 
         img = cv2.putText(img, "Time prim: {:.2f}ms".format(sum(times) / len(times) * 1000), (0, 30),
                           cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), 2)
